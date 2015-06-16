@@ -1,0 +1,21 @@
+
+	PID COMM             ARGS
+	238 /usr/libexec/Use /usr/libexec/UserEventAgent (Aqua)
+	240 /usr/sbin/distno /usr/sbin/distnoted agent
+	241 /usr/sbin/univer /usr/sbin/universalaccessd launchd -s
+	242 /usr/sbin/cfpref /usr/sbin/cfprefsd agent
+	244 /System/Library/ /System/Library/PrivateFrameworks/CalendarAgent.framework/Executables/CalendarAgent
+	246 /System/Library/ /System/Library/CoreServices/SocialPushAgent.app/Contents/MacOS/SocialPushAgent
+	249 /System/Library/ /System/Library/CoreServices/Dock.app/Contents/MacOS/Dock
+	251 /System/Library/ /System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer
+	252 /System/Library/ /System/Library/CoreServices/Finder.app/Contents/MacOS/Finder
+	259 /usr/sbin/pboard /usr/sbin/pboard
+	267 /usr/sbin/userno /usr/sbin/usernoted
+	430 login            login -pf sindresorhus
+	431 -zsh             -zsh
+	459 -zsh             -zsh
+	461 cat              cat
+	891 login            login -pf sindresorhus
+	892 -zsh             -zsh
+	918 -zsh             -zsh
+	920 cat              cat

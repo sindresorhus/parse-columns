@@ -1,0 +1,49 @@
+{
+  "name": "parse-columns",
+  "version": "0.0.0",
+  "description": "Parse text columns, like the output of unix commands",
+  "license": "MIT",
+  "repository": "sindresorhus/parse-columns",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "parse",
+    "parser",
+    "columns",
+    "column",
+    "col",
+    "row",
+    "text",
+    "string",
+    "str",
+    "unix",
+    "command",
+    "cmd",
+    "output",
+    "csv",
+    "shell",
+    "sh",
+    "term",
+    "table"
+  ],
+  "dependencies": {
+    "escape-string-regexp": "^1.0.3",
+    "execall": "^1.0.0",
+    "split-at": "^1.1.0"
+  },
+  "devDependencies": {
+    "ava": "0.0.4"
+  }
+}
