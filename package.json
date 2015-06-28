@@ -18,6 +18,9 @@
   "files": [
     "index.js"
   ],
+  "bin": {
+    "parse-columns": "./bin/parse-columns.js"
+  },
   "keywords": [
     "parse",
     "parser",
