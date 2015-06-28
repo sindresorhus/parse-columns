@@ -15,9 +15,11 @@ module.exports = function (str, opts) {
 	var stats = [];
 	var separator = opts.separator || ' ';
 	var reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
+	var headerLength = (lines[0] || '').length;
 
-	lines.forEach(function (el) {
-		execall(reSeparator, el).forEach(function (el) {
+	lines.forEach(function (line) {
+		line += new Array(Math.ceil(Math.max(headerLength - line.length, 0)/separator.length)).join(separator);
+		execall(reSeparator, line).forEach(function (el) {
 			var i = el.index;
 			stats[i] = typeof stats[i] === 'number' ? stats[i] + 1 : 1;
 		});
@@ -51,14 +53,11 @@ module.exports = function (str, opts) {
 	}
 
 	var ret = lines.map(function (line, lineIndex) {
-		var ret = {};
-
-		line.forEach(function (el, elIndex) {
-			var header = headers[elIndex];
-			ret[header] = opts.transform ? opts.transform(el, header, elIndex, lineIndex) : el;
-		});
-
-		return ret;
+		return headers.reduce(function (ret, header, colIndex) {
+			var el = line[colIndex] || '';
+			ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineIndex) : el;
+			return ret;
+		}, {});
 	});
 
 	return ret;
