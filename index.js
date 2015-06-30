@@ -29,19 +29,15 @@ module.exports = function (str, opts) {
 		});
 	});
 
-	var splits = [];
-
-	for (var i = 0; i < stats.length; i++) {
-		// found the separator on the same index on all lines
-		if (stats[i] === lines.length) {
-			splits.push(i);
+	var consecutive = false;
+	var splits = stats.reduce(function (splits, occurrenceCount, pos) {
+		if (occurrenceCount !== lines.length) consecutive = false;
+		else {
+			if (pos !== 0 && !consecutive) splits.push(pos);
+			consecutive = true;
 		}
-	}
-
-	// remove #0 and consecutive splits
-	splits = splits.filter(function (el, i, arr) {
-		return el !== 0 && el - 1 !== arr[i - 1];
-	});
+		return splits;
+	}, []);
 
 	// split columns
 	lines = lines.map(function (line) {
