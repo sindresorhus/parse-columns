@@ -29,40 +29,32 @@ module.exports = function (str, opts) {
 		});
 	});
 
-	var splits = [];
-
-	for (var i = 0; i < stats.length; i++) {
-		// found the separator on the same index on all lines
-		if (stats[i] === lines.length) {
-			splits.push(i);
+	var consecutive = false;
+	var splits = stats.reduce(function (splits, occurrenceCount, pos) {
+		if (occurrenceCount !== lines.length) consecutive = false;
+		else {
+			if (pos !== 0 && !consecutive) splits.push(pos);
+			consecutive = true;
 		}
-	}
+		return splits;
+	}, []);
 
-	// remove #0 and consecutive splits
-	splits = splits.filter(function (el, i, arr) {
-		return el !== 0 && el - 1 !== arr[i - 1];
-	});
-
-	// split columns
-	lines = lines.map(function (line) {
-		return splitAt(line, splits, {remove: true}).map(function (el) {
+	var headers = opts.headers;
+	return lines.reduce(function (rows, line, lineNumber) {
+		// split columns
+		var cells = splitAt(line, splits, {remove: true}).map(function (el) {
 			return el.trim();
 		});
-	});
 
-	var headers = lines.shift();
+		if (lineNumber === 0) headers = headers || cells;
+		else {
+			rows.push(headers.reduce(function (ret, header, colIndex) {
+				var el = cells[colIndex] || '';
+				ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineNumber) : el;
+				return ret;
+			}, {}));
+		}
 
-	if (opts.headers) {
-		headers = opts.headers;
-	}
-
-	var ret = lines.map(function (line, lineIndex) {
-		return headers.reduce(function (ret, header, colIndex) {
-			var el = line[colIndex] || '';
-			ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineIndex) : el;
-			return ret;
-		}, {});
-	});
-
-	return ret;
+		return rows;
+	}, []);
 };
