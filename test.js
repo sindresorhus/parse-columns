@@ -2,8 +2,9 @@
 var fs = require('fs');
 var test = require('ava');
 var parseColumns = require('./');
-var fixture = fs.readFileSync('fixture', 'utf8');
-var fixture2 = fs.readFileSync('fixture2', 'utf8');
+var fixture = fs.readFileSync('fixtures/ps.out', 'utf8');
+var fixture2 = fs.readFileSync('fixtures/ps-2.out', 'utf8');
+var fixture3 = fs.readFileSync('fixtures/lsof.out', 'utf8');
 
 test('parse', function (t) {
 	var f = parseColumns(fixture);
@@ -38,5 +39,15 @@ test('separator option', function (t) {
 		separator: '|'
 	});
 	t.assert(f[0].PID === '238');
+	t.end();
+});
+
+test('differing line lengths', function (t) {
+	var f = parseColumns(fixture3);
+	var cols = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME'.split(' ');
+	t.assert(f.every(function (row) {
+		return Object.keys(row).length === cols.length
+		    && cols.every(function (key) { return row.hasOwnProperty(key); });
+	}));
 	t.end();
 });
