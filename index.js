@@ -39,26 +39,22 @@ module.exports = function (str, opts) {
 		return splits;
 	}, []);
 
-	// split columns
-	lines = lines.map(function (line) {
-		return splitAt(line, splits, {remove: true}).map(function (el) {
+	var headers = opts.headers;
+	return lines.reduce(function (rows, line, lineNumber) {
+		// split columns
+		var cells = splitAt(line, splits, {remove: true}).map(function (el) {
 			return el.trim();
 		});
-	});
 
-	var headers = lines.shift();
+		if (lineNumber === 0) headers = headers || cells;
+		else {
+			rows.push(headers.reduce(function (ret, header, colIndex) {
+				var el = cells[colIndex] || '';
+				ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineNumber) : el;
+				return ret;
+			}, {}));
+		}
 
-	if (opts.headers) {
-		headers = opts.headers;
-	}
-
-	var ret = lines.map(function (line, lineIndex) {
-		return headers.reduce(function (ret, header, colIndex) {
-			var el = line[colIndex] || '';
-			ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineIndex) : el;
-			return ret;
-		}, {});
-	});
-
-	return ret;
+		return rows;
+	}, []);
 };
