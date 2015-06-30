@@ -1,6 +1,6 @@
 {
   "name": "parse-columns",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parse text columns, like the output of unix commands",
   "license": "MIT",
   "repository": "sindresorhus/parse-columns",
