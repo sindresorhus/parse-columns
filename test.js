@@ -45,9 +45,12 @@ test('separator option', function (t) {
 test('differing line lengths', function (t) {
 	var f = parseColumns(fixture3);
 	var cols = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME'.split(' ');
+
 	t.assert(f.every(function (row) {
-		return Object.keys(row).length === cols.length
-		    && cols.every(function (key) { return row.hasOwnProperty(key); });
+		return Object.keys(row).length === cols.length && cols.every(function (key) {
+			return row.hasOwnProperty(key);
+		});
 	}));
+
 	t.end();
 });

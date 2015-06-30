@@ -2,6 +2,7 @@
 var execall = require('execall');
 var splitAt = require('split-at');
 var escapeStringRegexp = require('escape-string-regexp');
+var repeating = require('repeating');
 
 /*
 Algorithm:
@@ -18,7 +19,10 @@ module.exports = function (str, opts) {
 	var headerLength = (lines[0] || '').length;
 
 	lines.forEach(function (line) {
-		line += new Array(Math.ceil(Math.max(headerLength - line.length, 0)/separator.length)).join(separator);
+		// ensure lines are as long as the header
+		var padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
+		line += repeating(separator, padAmount);
+
 		execall(reSeparator, line).forEach(function (el) {
 			var i = el.index;
 			stats[i] = typeof stats[i] === 'number' ? stats[i] + 1 : 1;
