@@ -90,6 +90,21 @@ The supplied function gets the following arguments and is expected to return the
 - `columnIndex` *(number)*
 - `rowIndex` *(number)*
 
+## CLI usage
+
+With a CLI JSON manipulator like [jq](https://github.com/stedolan/jq) or
+[underscore](https://github.com/ddopson/underscore-cli), you can install parse-columns
+globally, and easily manipulate columnar process output:
+
+```
+$ npm install -g parse-columns
+$ lsof -i | parse-columns | underscore --outfmt=text pluck NAME
+*:*
+*:62886
+*:*
+localhost:9050 (LISTEN)
+...
+```
 
 ## License
 
