@@ -13,48 +13,51 @@ module.exports = function (str, opts) {
 	opts = opts || {};
 
 	var lines = str.replace(/^\s*\n|\s+$/g, '').split('\n');
-	var stats = [];
 	var separator = opts.separator || ' ';
 	var reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
 	var headerLength = (lines[0] || '').length;
 
-	lines.forEach(function (line) {
+	var counts = [];
+	for (var i = 0, line; i < lines.length; i++) {
+		var line = lines[i];
 		// ensure lines are as long as the header
 		var padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
 		line += repeating(separator, padAmount);
 
-		execall(reSeparator, line).forEach(function (el) {
-			var i = el.index;
-			stats[i] = typeof stats[i] === 'number' ? stats[i] + 1 : 1;
-		});
-	});
+		var matches = execall(reSeparator, line);
+		for (var j = 0, match; j < matches.length; j++) {
+			var col = matches[j].index;
+			counts[col] = typeof counts[col] === 'number' ? counts[col] + 1 : 1;
+		}
+	}
 
+	var splits = [];
 	var consecutive = false;
-	var splits = stats.reduce(function (splits, occurrenceCount, pos) {
-		if (occurrenceCount !== lines.length) consecutive = false;
+	for (var col = 0, count; col < counts.length; col++) {
+		var count = counts[col];
+		if (count !== lines.length) consecutive = false;
 		else {
-			if (pos !== 0 && !consecutive) splits.push(pos);
+			if (col !== 0 && !consecutive) splits.push(col);
 			consecutive = true;
 		}
-		return splits;
-	}, []);
+	}
 
+	var rows = [];
 	var headers = opts.headers;
-	return lines.reduce(function (rows, line, lineNumber) {
-		// split columns
-		var cells = splitAt(line, splits, {remove: true}).map(function (el) {
-			return el.trim();
-		});
-
-		if (lineNumber === 0) headers = headers || cells;
-		else {
-			rows.push(headers.reduce(function (ret, header, colIndex) {
-				var el = cells[colIndex] || '';
-				ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineNumber) : el;
-				return ret;
-			}, {}));
+	for (var i = 0, line; i < lines.length; i++) {
+		var els = splitAt(lines[i], splits, {remove: true});
+		if (i !== 0) {
+			var row = {};
+			for (var j = 0, el, header; j < headers.length; j++) {
+				el = (els[j] || '').trim();
+				header = headers[j];
+				row[header] = opts.transform ? opts.transform(el, header, j, i) : el;
+			}
+			rows.push(row);
+		} else if (!headers) {
+			headers = [];
+			for (var j = 0; j < els.length; j++) headers.push(els[j].trim());
 		}
-
-		return rows;
-	}, []);
+	}
+	return rows;
 };
