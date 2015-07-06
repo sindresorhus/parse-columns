@@ -9,17 +9,13 @@ Algorithm:
 Find separators that are on the same index on each line, remove consecutive ones, then split on those indexes. It's important to check each line as you don't want to split in the middle of a column row just because it contains the separator.
 */
 
-function Table (lines, opts) {
-	this.lines = lines;
-	this.opts = opts || {};
-}
-Table.prototype.countSeps = function () {
+function countSeps (lines, separator) {
 	var counts = [];
-	var separator = this.opts.separator || ' ';
+	separator = separator || ' ';
 	var reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
-	var headerLength = (this.lines[0] || '').length;
-	for (var i = 0, line; i < this.lines.length; i++) {
-		line = this.lines[i];
+	var headerLength = (lines[0] || '').length;
+	for (var i = 0, line; i < lines.length; i++) {
+		line = lines[i];
 		// ensure lines are as long as the header
 		var padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
 		line += repeating(separator, padAmount);
@@ -33,14 +29,14 @@ Table.prototype.countSeps = function () {
 
 	return counts;
 };
-Table.prototype.getSplits = function () {
-	var counts = this.countSeps();
+function getSplits (lines, separator) {
+	var counts = countSeps(lines, separator);
 
 	var splits = [];
 	var consecutive = false;
 	for (var col = 0, count; col < counts.length; col++) {
 		count = counts[col];
-		if (count !== this.lines.length) {
+		if (count !== lines.length) {
 			consecutive = false;
 		} else {
 			if (col !== 0 && !consecutive) splits.push(col);
@@ -50,14 +46,16 @@ Table.prototype.getSplits = function () {
 
 	return splits;
 };
-Table.prototype.parseColumns = function () {
-	var splits = this.getSplits();
+function parseColumns (str, opts) {
+	opts = opts || {};
+	var lines = str.replace(/^\s*\n|\s+$/g, '').split('\n');
+	var splits = getSplits(lines, opts.separator);
 
 	var rows = [];
-	var headers = this.opts.headers;
-	var transform = this.opts.transform;
-	for (var i = 0, els; i < this.lines.length; i++) {
-		els = splitAt(this.lines[i], splits, {remove: true});
+	var headers = opts.headers;
+	var transform = opts.transform;
+	for (var i = 0, els; i < lines.length; i++) {
+		els = splitAt(lines[i], splits, {remove: true});
 		if (i !== 0) {
 			var row = {};
 			for (var j = 0, el, header; j < headers.length; j++) {
@@ -75,8 +73,6 @@ Table.prototype.parseColumns = function () {
 	return rows;
 };
 
-module.exports = function parseColumns (str, opts) {
-	var lines = str.replace(/^\s*\n|\s+$/g, '').split('\n');
-	return new Table(lines, opts).parseColumns();
-};
-module.exports.Table = Table;
+module.exports = parseColumns;
+module.exports.getSplits = getSplits;
+module.exports.countSeps = countSeps;
