@@ -74,5 +74,3 @@ function parseColumns (str, opts) {
 };
 
 module.exports = parseColumns;
-module.exports.getSplits = getSplits;
-module.exports.countSeps = countSeps;
