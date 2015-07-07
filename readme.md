@@ -91,6 +91,11 @@ The supplied function gets the following arguments and is expected to return the
 - `rowIndex` *(number)*
 
 
+## Related
+
+- [parse-columns-cli](https://github.com/sindresorhus/parse-columns-cli) - CLI for this module
+
+
 ## License
 
 MIT © [Sindre Sorhus](http://sindresorhus.com)
