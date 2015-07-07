@@ -9,60 +9,68 @@ Algorithm:
 Find separators that are on the same index on each line, remove consecutive ones, then split on those indexes. It's important to check each line as you don't want to split in the middle of a column row just because it contains the separator.
 */
 
-module.exports = function (str, opts) {
-	opts = opts || {};
-
-	var lines = str.replace(/^\s*\n|\s+$/g, '').split('\n');
-	var stats = [];
-	var separator = opts.separator || ' ';
+function countSeps (lines, separator) {
+	var counts = [];
+	separator = separator || ' ';
 	var reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
 	var headerLength = (lines[0] || '').length;
-
-	lines.forEach(function (line) {
+	for (var i = 0, line; i < lines.length; i++) {
+		line = lines[i];
 		// ensure lines are as long as the header
 		var padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
 		line += repeating(separator, padAmount);
 
-		execall(reSeparator, line).forEach(function (el) {
-			var i = el.index;
-			stats[i] = typeof stats[i] === 'number' ? stats[i] + 1 : 1;
-		});
-	});
-
-	var splits = [];
-
-	for (var i = 0; i < stats.length; i++) {
-		// found the separator on the same index on all lines
-		if (stats[i] === lines.length) {
-			splits.push(i);
+		var matches = execall(reSeparator, line);
+		for (var j = 0, col; j < matches.length; j++) {
+			col = matches[j].index;
+			counts[col] = typeof counts[col] === 'number' ? counts[col] + 1 : 1;
 		}
 	}
 
-	// remove #0 and consecutive splits
-	splits = splits.filter(function (el, i, arr) {
-		return el !== 0 && el - 1 !== arr[i - 1];
-	});
+	return counts;
+};
+function getSplits (lines, separator) {
+	var counts = countSeps(lines, separator);
 
-	// split columns
-	lines = lines.map(function (line) {
-		return splitAt(line, splits, {remove: true}).map(function (el) {
-			return el.trim();
-		});
-	});
-
-	var headers = lines.shift();
-
-	if (opts.headers) {
-		headers = opts.headers;
+	var splits = [];
+	var consecutive = false;
+	for (var col = 0, count; col < counts.length; col++) {
+		count = counts[col];
+		if (count !== lines.length) {
+			consecutive = false;
+		} else {
+			if (col !== 0 && !consecutive) splits.push(col);
+			consecutive = true;
+		}
 	}
 
-	var ret = lines.map(function (line, lineIndex) {
-		return headers.reduce(function (ret, header, colIndex) {
-			var el = line[colIndex] || '';
-			ret[header] = opts.transform ? opts.transform(el, header, colIndex, lineIndex) : el;
-			return ret;
-		}, {});
-	});
-
-	return ret;
+	return splits;
 };
+function parseColumns (str, opts) {
+	opts = opts || {};
+	var lines = str.replace(/^\s*\n|\s+$/g, '').split('\n');
+	var splits = getSplits(lines, opts.separator);
+
+	var rows = [];
+	var headers = opts.headers;
+	var transform = opts.transform;
+	for (var i = 0, els; i < lines.length; i++) {
+		els = splitAt(lines[i], splits, {remove: true});
+		if (i !== 0) {
+			var row = {};
+			for (var j = 0, el, header; j < headers.length; j++) {
+				el = (els[j] || '').trim();
+				header = headers[j];
+				row[header] = transform ? transform(el, header, j, i) : el;
+			}
+			rows.push(row);
+		} else if (!headers) {
+			headers = [];
+			for (var j = 0; j < els.length; j++) headers.push(els[j].trim());
+		}
+	}
+
+	return rows;
+};
+
+module.exports = parseColumns;

@@ -54,3 +54,16 @@ test('differing line lengths', function (t) {
 
 	t.end();
 });
+
+test('benchmark', function (t) {
+	var total = 0, count = 10;
+	for (var i = 0; i < count; i++) {
+		var start = Date.now();
+		parseColumns(fixture3);
+		total += Date.now() - start;
+	}
+
+	console.log(count+" iterations: "+(total/(1000*count))+"s");
+
+	t.end();
+});
