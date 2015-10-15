@@ -41,10 +41,10 @@
   "dependencies": {
     "escape-string-regexp": "^1.0.3",
     "execall": "^1.0.0",
-    "repeating": "^1.1.3",
+    "repeating": "^2.0.0",
     "split-at": "^1.1.0"
   },
   "devDependencies": {
-    "ava": "0.0.4"
+    "ava": "^0.2.0"
   }
 }
