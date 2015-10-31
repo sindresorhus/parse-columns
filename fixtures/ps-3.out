@@ -1,0 +1,6 @@
+  PID CMD                          STARTED
+ 5971 emacs -nw                     Oct 29
+22678 emacs -nw foo.js            13:10:36
+28752 emacs -nw .                   Oct 28
+31236 emacs -nw fixtures/ps-3.out 17:10:10
+32513 emacs -nw README.md           Oct 28

@@ -64,27 +64,36 @@ module.exports = function (str, opts) {
 	var rows = [];
 	var headers = opts.headers;
 	var transform = opts.transform;
+	var els;
 
-	for (var i = 0, els; i < lines.length; i++) {
-		els = splitAt(lines[i], splits, {remove: true});
+	if (!headers) {
+		headers = [];
+		els = splitAt(lines[0], splits, {remove: true});
 
-		if (i !== 0) {
-			var row = {};
-
-			for (var j = 0, el, header; j < headers.length; j++) {
-				el = (els[j] || '').trim();
-				header = headers[j];
-				row[header] = transform ? transform(el, header, j, i) : el;
-			}
-
-			rows.push(row);
-		} else if (!headers) {
-			headers = [];
-
-			for (var j2 = 0; j2 < els.length; j2++) {
-				headers.push(els[j2].trim());
+		for (var index = 0, el; index < els.length; ++index) {
+			el = els[index].trim();
+			if (el) {
+				headers.push(el);
+			} else {
+				splits[index - 1] = null;
 			}
 		}
+
+		splits = splits.filter(Boolean);
+	}
+
+	for (var i = 1; i < lines.length; i++) {
+		els = splitAt(lines[i], splits, {remove: true});
+
+		var row = {};
+
+		for (var j = 0, el, header; j < headers.length; j++) {
+			el = (els[j] || '').trim();
+			header = headers[j];
+			row[header] = transform ? transform(el, header, j, i) : el;
+		}
+
+		rows.push(row);
 	}
 
 	return rows;

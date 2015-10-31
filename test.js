@@ -5,6 +5,7 @@ var parseColumns = require('./');
 var fixture = fs.readFileSync('fixtures/ps.out', 'utf8');
 var fixture2 = fs.readFileSync('fixtures/ps-2.out', 'utf8');
 var fixture3 = fs.readFileSync('fixtures/lsof.out', 'utf8');
+var fixture4 = fs.readFileSync('fixtures/ps-3.out', 'utf8');
 
 test('parse', function (t) {
 	var f = parseColumns(fixture);
@@ -51,6 +52,40 @@ test('differing line lengths', function (t) {
 			return row.hasOwnProperty(key);
 		});
 	}));
+
+	t.end();
+});
+
+test('separators in values', function (t) {
+	var f = parseColumns(fixture4);
+
+	t.same(f, [
+		{
+			PID: '5971',
+			CMD: 'emacs -nw',
+			STARTED: 'Oct 29'
+		},
+		{
+			PID: '22678',
+			CMD: 'emacs -nw foo.js',
+			STARTED: '13:10:36'
+		},
+		{
+			PID: '28752',
+			CMD: 'emacs -nw .',
+			STARTED: 'Oct 28'
+		},
+		{
+			PID: '31236',
+			CMD: 'emacs -nw fixtures/ps-3.out',
+			STARTED: '17:10:10'
+		},
+		{
+			PID: '32513',
+			CMD: 'emacs -nw README.md',
+			STARTED: 'Oct 28'
+		}
+	]);
 
 	t.end();
 });
