@@ -1,63 +1,55 @@
-'use strict';
-var fs = require('fs');
-var test = require('ava');
-var parseColumns = require('./');
-var fixture = fs.readFileSync('fixtures/ps.out', 'utf8');
-var fixture2 = fs.readFileSync('fixtures/ps-2.out', 'utf8');
-var fixture3 = fs.readFileSync('fixtures/lsof.out', 'utf8');
-var fixture4 = fs.readFileSync('fixtures/ps-3.out', 'utf8');
+import fs from 'fs';
+import test from 'ava';
+import fn from './';
 
-test('parse', function (t) {
-	var f = parseColumns(fixture);
-	t.assert(f[0].PID === '238');
-	t.end();
+const fixture = fs.readFileSync('fixtures/ps.out', 'utf8');
+const fixture2 = fs.readFileSync('fixtures/ps-2.out', 'utf8');
+const fixture3 = fs.readFileSync('fixtures/lsof.out', 'utf8');
+const fixture4 = fs.readFileSync('fixtures/ps-3.out', 'utf8');
+
+test('parse', t => {
+	const f = fn(fixture);
+	t.is(f[0].PID, '238');
 });
 
-test('headers option', function (t) {
-	var f = parseColumns(fixture, {
+test('headers option', t => {
+	const f = fn(fixture, {
 		headers: ['pid', 'name', 'cmd']
 	});
-	t.assert(f[0].pid === '238');
-	t.assert(f[0].name);
-	t.assert(f[0].cmd);
-	t.end();
+	t.is(f[0].pid, '238');
+	t.ok(f[0].name);
+	t.ok(f[0].cmd);
 });
 
-test('transform option', function (t) {
-	var f = parseColumns(fixture, {
-		transform: function (el, header, rowIndex, columnIndex) {
-			t.assert(typeof rowIndex === 'number');
-			t.assert(typeof columnIndex === 'number');
+test('transform option', t => {
+	const f = fn(fixture, {
+		transform: (el, header, rowIndex, columnIndex) => {
+			t.is(typeof rowIndex, 'number');
+			t.is(typeof columnIndex, 'number');
 			return header === 'PID' ? Number(el) : el;
 		}
 	});
-	t.assert(f[0].PID === 238);
-	t.end();
+	t.is(f[0].PID, 238);
 });
 
-test('separator option', function (t) {
-	var f = parseColumns(fixture2, {
+test('separator option', t => {
+	const f = fn(fixture2, {
 		separator: '|'
 	});
-	t.assert(f[0].PID === '238');
-	t.end();
+	t.is(f[0].PID, '238');
 });
 
-test('differing line lengths', function (t) {
-	var f = parseColumns(fixture3);
-	var cols = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME'.split(' ');
+test('differing line lengths', t => {
+	const f = fn(fixture3);
+	const cols = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME'.split(' ');
 
-	t.assert(f.every(function (row) {
-		return Object.keys(row).length === cols.length && cols.every(function (key) {
-			return row.hasOwnProperty(key);
-		});
+	t.true(f.every(row => {
+		return Object.keys(row).length === cols.length && cols.every(x => row.hasOwnProperty(x));
 	}));
-
-	t.end();
 });
 
-test('separators in values', function (t) {
-	var f = parseColumns(fixture4);
+test('separators in values', t => {
+	const f = fn(fixture4);
 
 	t.same(f, [
 		{
@@ -86,21 +78,17 @@ test('separators in values', function (t) {
 			STARTED: 'Oct 28'
 		}
 	]);
-
-	t.end();
 });
 
-test('benchmark', function (t) {
-	var total = 0;
-	var count = 30;
+test.after('benchmark', () => {
+	const count = 30;
+	let total = 0;
 
-	for (var i = 0; i < count; i++) {
-		var start = Date.now();
-		parseColumns(fixture3);
+	for (let i = 0; i < count; i++) {
+		const start = Date.now();
+		fn(fixture3);
 		total += Date.now() - start;
 	}
 
 	console.log(count + ' iterations: ' + (total / (1000 * count)) + 's');
-
-	t.end();
 });
