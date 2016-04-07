@@ -17,8 +17,8 @@ test('headers option', t => {
 		headers: ['pid', 'name', 'cmd']
 	});
 	t.is(f[0].pid, '238');
-	t.ok(f[0].name);
-	t.ok(f[0].cmd);
+	t.truthy(f[0].name);
+	t.truthy(f[0].cmd);
 });
 
 test('transform option', t => {
@@ -51,7 +51,7 @@ test('differing line lengths', t => {
 test('separators in values', t => {
 	const f = fn(fixture4);
 
-	t.same(f, [
+	t.deepEqual(f, [
 		{
 			PID: '5971',
 			CMD: 'emacs -nw',
