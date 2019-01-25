@@ -1,12 +1,12 @@
 # parse-columns [![Build Status](https://travis-ci.org/sindresorhus/parse-columns.svg?branch=master)](https://travis-ci.org/sindresorhus/parse-columns)
 
-> Parse text columns, like the output of unix commands
+> Parse text columns, like the output of Unix commands
 
 
 ## Install
 
 ```
-$ npm install --save parse-columns
+$ npm install parse-columns
 ```
 
 
@@ -21,31 +21,39 @@ map -hosts           0         0         0   100%    /net
 ```
 
 ```js
-var childProcess = require('child_process');
-var parseColumns = require('parse-columns');
+const {promisify} = require('util');
+const childProcess = require('child_process');
+const parseColumns = require('parse-columns');
 
-childProcess.execFile('df', ['-kP'], function (err, stdout) {
+const execFile = promisify(childProcess.execFile);
+
+(async () => {
+	const {stdout} = await execFile('df', ['-kP']);
+
 	console.log(parseColumns(stdout, {
-		transform: function (el, header, columnIndex) {
-			// coerce elements in column index 1 to 3 to a number
+		transform: (item, header, columnIndex) => {
+			// Coerce elements in column index 1 to 3 to a number
 			if (columnIndex >= 1 && columnIndex <= 3) {
-				return Number(el);
+				return Number(item);
 			}
 
-			return el;
+			return item;
 		}
 	}));
 	/*
-	[{
-		Filesystem: '/dev/disk1',
-		'1024-blocks': 487350400,
-		Used: 467528020,
-		Available: 19566380,
-		Capacity: '96%',
-		'Mounted on': '/'
-	}, ...]
+	[
+		{
+			Filesystem: '/dev/disk1',
+			'1024-blocks': 487350400,
+			Used: 467528020,
+			Available: 19566380,
+			Capacity: '96%',
+			'Mounted on': '/'
+		},
+		…
+	]
 	*/
-});
+})();
 ```
 
 
@@ -55,29 +63,30 @@ childProcess.execFile('df', ['-kP'], function (err, stdout) {
 
 #### input
 
-*Required*  
 Type: `string`
 
 Text columns to parse.
 
 #### options
 
+Type: `Object`
+
 ##### separator
 
-Type: `string`  
-Default: `' '`
+Type: `string`
+Default: ` `
 
 Separator to split columns on.
 
 ##### headers
 
-Type: `array`
+Type: `string[]`
 
 Headers to use instead of the existing ones.
 
 ##### transform
 
-Type: `function`
+Type: `Function`
 
 Transform elements.
 
@@ -98,4 +107,4 @@ The supplied function gets the following arguments and is expected to return the
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)

@@ -1,52 +1,42 @@
 'use strict';
-var execall = require('execall');
-var splitAt = require('split-at');
-var escapeStringRegexp = require('escape-string-regexp');
-var repeating = require('repeating');
+const execall = require('execall');
+const splitAt = require('split-at');
+const escapeStringRegexp = require('escape-string-regexp');
 
 /*
 Algorithm:
 Find separators that are on the same index on each line, remove consecutive ones, then split on those indexes. It's important to check each line as you don't want to split in the middle of a column row just because it contains the separator.
 */
 
-function countSeps(lines, separator) {
-	separator = separator || ' ';
+const countSeparators = (lines, separator = ' ') => {
+	const counts = [];
+	const reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
+	const headerLength = (lines[0] || '').length;
 
-	var counts = [];
-	var reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
-	var headerLength = (lines[0] || '').length;
+	for (let line of lines) {
+		// Ensure lines are as long as the header
+		const padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
+		line += separator.repeat(padAmount);
 
-	for (var i = 0, line; i < lines.length; i++) {
-		line = lines[i];
-
-		// ensure lines are as long as the header
-		var padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
-		line += repeating(separator, padAmount);
-
-		var matches = execall(reSeparator, line);
-
-		for (var j = 0, col; j < matches.length; j++) {
-			col = matches[j].index;
-			counts[col] = typeof counts[col] === 'number' ? counts[col] + 1 : 1;
+		for (const {index: column} of execall(reSeparator, line)) {
+			counts[column] = typeof counts[column] === 'number' ? counts[column] + 1 : 1;
 		}
 	}
 
 	return counts;
-}
+};
 
-function getSplits(lines, separator) {
-	var counts = countSeps(lines, separator);
-	var splits = [];
-	var consecutive = false;
+const getSplits = (lines, separator) => {
+	const counts = countSeparators(lines, separator);
+	const splits = [];
+	let consecutive = false;
 
-	for (var col = 0, count; col < counts.length; col++) {
-		count = counts[col];
-
+	for (const [index, count] of counts.entries()) {
 		if (count !== lines.length) {
 			consecutive = false;
 		} else {
-			if (col !== 0 && !consecutive) {
-				splits.push(col);
+			if (index !== 0 && !consecutive) {
+				splits.push(index);
 			}
 
 			consecutive = true;
@@ -54,26 +44,24 @@ function getSplits(lines, separator) {
 	}
 
 	return splits;
-}
+};
 
-module.exports = function (str, opts) {
-	opts = opts || {};
+module.exports = (input, options = {}) => {
+	const lines = input.replace(/^\s*\n|\s+$/g, '').split('\n');
+	let splits = getSplits(lines, options.separator);
+	const {transform} = options;
+	const rows = [];
+	let items;
 
-	var lines = str.replace(/^\s*\n|\s+$/g, '').split('\n');
-	var splits = getSplits(lines, opts.separator);
-	var rows = [];
-	var headers = opts.headers;
-	var transform = opts.transform;
-	var els;
-
+	let {headers} = options;
 	if (!headers) {
 		headers = [];
-		els = splitAt(lines[0], splits, {remove: true});
+		items = splitAt(lines[0], splits, {remove: true});
 
-		for (var index = 0, el; index < els.length; ++index) {
-			el = els[index].trim();
-			if (el) {
-				headers.push(el);
+		for (let [index, item] of items.entries()) {
+			item = item.trim();
+			if (item) {
+				headers.push(item);
 			} else {
 				splits[index - 1] = null;
 			}
@@ -82,15 +70,13 @@ module.exports = function (str, opts) {
 		splits = splits.filter(Boolean);
 	}
 
-	for (var i = 1; i < lines.length; i++) {
-		els = splitAt(lines[i], splits, {remove: true});
+	for (const [index, line] of lines.slice(1).entries()) {
+		items = splitAt(line, splits, {remove: true});
 
-		var row = {};
-
-		for (var j = 0, el, header; j < headers.length; j++) {
-			el = (els[j] || '').trim();
-			header = headers[j];
-			row[header] = transform ? transform(el, header, j, i) : el;
+		const row = {};
+		for (const [index2, header] of headers.entries()) {
+			const item = (items[index2] || '').trim();
+			row[header] = transform ? transform(item, header, index2, index) : item;
 		}
 
 		rows.push(row);

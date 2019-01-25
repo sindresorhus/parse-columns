@@ -1,57 +1,61 @@
 import fs from 'fs';
 import test from 'ava';
-import fn from './';
+import parseColumns from '.';
 
-const fixture = fs.readFileSync('fixtures/ps.out', 'utf8');
+const fixture1 = fs.readFileSync('fixtures/ps.out', 'utf8');
 const fixture2 = fs.readFileSync('fixtures/ps-2.out', 'utf8');
 const fixture3 = fs.readFileSync('fixtures/lsof.out', 'utf8');
 const fixture4 = fs.readFileSync('fixtures/ps-3.out', 'utf8');
 
 test('parse', t => {
-	const f = fn(fixture);
-	t.is(f[0].PID, '238');
+	const fixture = parseColumns(fixture1);
+	t.is(fixture[0].PID, '238');
 });
 
 test('headers option', t => {
-	const f = fn(fixture, {
-		headers: ['pid', 'name', 'cmd']
+	const fixture = parseColumns(fixture1, {
+		headers: [
+			'pid',
+			'name',
+			'cmd'
+		]
 	});
-	t.is(f[0].pid, '238');
-	t.truthy(f[0].name);
-	t.truthy(f[0].cmd);
+	t.is(fixture[0].pid, '238');
+	t.truthy(fixture[0].name);
+	t.truthy(fixture[0].cmd);
 });
 
 test('transform option', t => {
-	const f = fn(fixture, {
-		transform: (el, header, rowIndex, columnIndex) => {
+	const fixture = parseColumns(fixture1, {
+		transform: (item, header, rowIndex, columnIndex) => {
 			t.is(typeof rowIndex, 'number');
 			t.is(typeof columnIndex, 'number');
-			return header === 'PID' ? Number(el) : el;
+			return header === 'PID' ? Number(item) : item;
 		}
 	});
-	t.is(f[0].PID, 238);
+	t.is(fixture[0].PID, 238);
 });
 
 test('separator option', t => {
-	const f = fn(fixture2, {
+	const fixture = parseColumns(fixture2, {
 		separator: '|'
 	});
-	t.is(f[0].PID, '238');
+	t.is(fixture[0].PID, '238');
 });
 
 test('differing line lengths', t => {
-	const f = fn(fixture3);
-	const cols = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME'.split(' ');
+	const fixture = parseColumns(fixture3);
+	const columns = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME'.split(' ');
 
-	t.true(f.every(row => {
-		return Object.keys(row).length === cols.length && cols.every(x => row.hasOwnProperty(x));
+	t.true(fixture.every(row => {
+		return Object.keys(row).length === columns.length && columns.every(column => Reflect.has(row, column));
 	}));
 });
 
 test('separators in values', t => {
-	const f = fn(fixture4);
+	const fixture = parseColumns(fixture4);
 
-	t.deepEqual(f, [
+	t.deepEqual(fixture, [
 		{
 			PID: '5971',
 			CMD: 'emacs -nw',
@@ -86,9 +90,9 @@ test.after('benchmark', () => {
 
 	for (let i = 0; i < count; i++) {
 		const start = Date.now();
-		fn(fixture3);
+		parseColumns(fixture3);
 		total += Date.now() - start;
 	}
 
-	console.log(count + ' iterations: ' + (total / (1000 * count)) + 's');
+	console.log(`${count} iterations: ${total / (1000 * count)}s`);
 });
