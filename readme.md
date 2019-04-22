@@ -25,10 +25,10 @@ const {promisify} = require('util');
 const childProcess = require('child_process');
 const parseColumns = require('parse-columns');
 
-const execFile = promisify(childProcess.execFile);
+const execFileP = promisify(childProcess.execFile);
 
 (async () => {
-	const {stdout} = await execFile('df', ['-kP']);
+	const {stdout} = await execFileP('df', ['-kP']);
 
 	console.log(parseColumns(stdout, {
 		transform: (item, header, columnIndex) => {
@@ -69,12 +69,12 @@ Text columns to parse.
 
 #### options
 
-Type: `Object`
+Type: `object`
 
 ##### separator
 
 Type: `string`
-Default: ` `
+Default: `' '`
 
 Separator to split columns on.
 

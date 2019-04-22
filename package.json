@@ -13,10 +13,11 @@
 		"node": ">=8"
 	},
 	"scripts": {
-		"test": "ava"
+		"test": "xo && ava && tsd"
 	},
 	"files": [
-		"index.js"
+		"index.js",
+		"index.d.ts"
 	],
 	"keywords": [
 		"parse",
@@ -39,12 +40,13 @@
 		"table"
 	],
 	"dependencies": {
-		"escape-string-regexp": "^1.0.5",
-		"execall": "^1.0.0",
+		"escape-string-regexp": "^2.0.0",
+		"execall": "^2.0.0",
 		"split-at": "^1.2.0"
 	},
 	"devDependencies": {
-		"ava": "^1.1.0",
+		"ava": "^1.4.1",
+		"tsd": "^0.7.2",
 		"xo": "^0.24.0"
 	}
 }

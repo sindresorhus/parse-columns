@@ -32,7 +32,7 @@ const getSplits = (lines, separator) => {
 	let consecutive = false;
 
 	for (const [index, count] of counts.entries()) {
-		if (count !== lines.length) {
+		if (count !== lines.length) { // eslint-disable-line no-negated-condition
 			consecutive = false;
 		} else {
 			if (index !== 0 && !consecutive) {
