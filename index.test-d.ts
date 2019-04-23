@@ -8,7 +8,7 @@ expectType<Array<{[key: string]: string}>>(
 expectType<Array<{[key: string]: string}>>(
 	parseColumns('foo', {headers: ['foo', 'bar']})
 );
-expectType<{[key: string]: string | number}[]>(
+expectType<Array<{[key: string]: string | number}>>(
 	parseColumns('foo', {
 		transform(element, header, columnIndex, rowIndex) {
 			expectType<string>(element);

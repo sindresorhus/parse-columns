@@ -59,9 +59,9 @@ const execFileP = promisify(childProcess.execFile);
 
 ## API
 
-### parseColumns(input, [options])
+### parseColumns(textColumns, [options])
 
-#### input
+#### textColumns
 
 Type: `string`
 

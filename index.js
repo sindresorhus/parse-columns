@@ -10,7 +10,7 @@ Find separators that are on the same index on each line, remove consecutive ones
 
 const countSeparators = (lines, separator = ' ') => {
 	const counts = [];
-	const reSeparator = new RegExp(escapeStringRegexp(separator), 'g');
+	const separatorRegex = new RegExp(escapeStringRegexp(separator), 'g');
 	const headerLength = (lines[0] || '').length;
 
 	for (let line of lines) {
@@ -18,7 +18,7 @@ const countSeparators = (lines, separator = ' ') => {
 		const padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
 		line += separator.repeat(padAmount);
 
-		for (const {index: column} of execall(reSeparator, line)) {
+		for (const {index: column} of execall(separatorRegex, line)) {
 			counts[column] = typeof counts[column] === 'number' ? counts[column] + 1 : 1;
 		}
 	}

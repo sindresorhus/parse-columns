@@ -29,7 +29,7 @@ declare namespace parseColumns {
 /**
 Parse text columns, like the output of Unix commands.
 
-@param input - Text columns to parse.
+@param textColumns - Text columns to parse.
 
 @example
 ```
@@ -67,7 +67,7 @@ const execFileP = promisify(childProcess.execFile);
 ```
 */
 declare function parseColumns<ValuesType extends unknown = string>(
-	input: string,
+	textColumns: string,
 	options?: parseColumns.Options<ValuesType>
 ): Array<{[key: string]: ValuesType}>;
 

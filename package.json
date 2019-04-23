@@ -24,14 +24,11 @@
 		"parser",
 		"columns",
 		"column",
-		"col",
 		"row",
 		"text",
 		"string",
-		"str",
 		"unix",
 		"command",
-		"cmd",
 		"output",
 		"csv",
 		"shell",
@@ -42,7 +39,7 @@
 	"dependencies": {
 		"escape-string-regexp": "^2.0.0",
 		"execall": "^2.0.0",
-		"split-at": "^1.2.0"
+		"split-at": "^2.0.0"
 	},
 	"devDependencies": {
 		"ava": "^1.4.1",
