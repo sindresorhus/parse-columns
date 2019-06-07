@@ -1,5 +1,5 @@
 declare namespace parseColumns {
-	interface Options<ValuesType extends unknown = string> {
+	interface Options<ValuesType = string> {
 		/**
 		Separator to split columns on.
 
@@ -66,7 +66,7 @@ const execFileP = promisify(childProcess.execFile);
 })();
 ```
 */
-declare function parseColumns<ValuesType extends unknown = string>(
+declare function parseColumns<ValuesType = string>(
 	textColumns: string,
 	options?: parseColumns.Options<ValuesType>
 ): Array<{[key: string]: ValuesType}>;
