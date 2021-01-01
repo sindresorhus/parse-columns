@@ -1,4 +1,4 @@
-# parse-columns [![Build Status](https://travis-ci.org/sindresorhus/parse-columns.svg?branch=master)](https://travis-ci.org/sindresorhus/parse-columns)
+# parse-columns
 
 > Parse text columns, like the output of Unix commands
 
