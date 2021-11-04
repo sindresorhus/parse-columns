@@ -1,14 +1,14 @@
 import {expectType} from 'tsd';
-import parseColumns = require('.');
+import parseColumns from './index.js';
 
-expectType<Array<{[key: string]: string}>>(parseColumns('foo'));
-expectType<Array<{[key: string]: string}>>(
-	parseColumns('foo', {separator: ' '})
+expectType<Array<Record<string, string>>>(parseColumns('foo'));
+expectType<Array<Record<string, string>>>(
+	parseColumns('foo', {separator: ' '}),
 );
-expectType<Array<{[key: string]: string}>>(
-	parseColumns('foo', {headers: ['foo', 'bar']})
+expectType<Array<Record<string, string>>>(
+	parseColumns('foo', {headers: ['foo', 'bar']}),
 );
-expectType<Array<{[key: string]: string | number}>>(
+expectType<Array<Record<string, string | number>>>(
 	parseColumns('foo', {
 		transform(element, header, columnIndex, rowIndex) {
 			expectType<string>(element);
@@ -21,6 +21,6 @@ expectType<Array<{[key: string]: string | number}>>(
 			}
 
 			return element;
-		}
-	})
+		},
+	}),
 );

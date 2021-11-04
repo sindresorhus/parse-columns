@@ -4,13 +4,16 @@
 	"description": "Parse text columns, like the output of Unix commands",
 	"license": "MIT",
 	"repository": "sindresorhus/parse-columns",
+	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
-		"url": "sindresorhus.com"
+		"url": "https://sindresorhus.com"
 	},
+	"type": "module",
+	"exports": "./index.js",
 	"engines": {
-		"node": ">=8"
+		"node": "^12.20.0 || ^14.13.1 || >=16.0.0"
 	},
 	"scripts": {
 		"test": "xo && ava && tsd"
@@ -37,13 +40,13 @@
 		"table"
 	],
 	"dependencies": {
-		"escape-string-regexp": "^2.0.0",
-		"execall": "^2.0.0",
-		"split-at": "^2.0.0"
+		"escape-string-regexp": "^5.0.0",
+		"execall": "^3.0.0",
+		"split-at": "^3.0.0"
 	},
 	"devDependencies": {
-		"ava": "^2.4.0",
-		"tsd": "^0.7.2",
-		"xo": "^0.24.0"
+		"ava": "^3.15.0",
+		"tsd": "^0.18.0",
+		"xo": "^0.46.4"
 	}
 }

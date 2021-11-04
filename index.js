@@ -1,7 +1,6 @@
-'use strict';
-const execall = require('execall');
-const splitAt = require('split-at');
-const escapeStringRegexp = require('escape-string-regexp');
+import execall from 'execall';
+import splitAt from 'split-at';
+import escapeStringRegexp from 'escape-string-regexp';
 
 /*
 Algorithm:
@@ -46,7 +45,7 @@ const getSplits = (lines, separator) => {
 	return splits;
 };
 
-module.exports = (input, options = {}) => {
+export default function parseColumns(input, options = {}) {
 	const lines = input.replace(/^\s*\n|\s+$/g, '').split('\n');
 	let splits = getSplits(lines, options.separator);
 	const {transform} = options;
@@ -83,4 +82,4 @@ module.exports = (input, options = {}) => {
 	}
 
 	return rows;
-};
+}

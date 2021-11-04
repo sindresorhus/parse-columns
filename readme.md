@@ -2,13 +2,11 @@
 
 > Parse text columns, like the output of Unix commands
 
-
 ## Install
 
+```sh
+npm install parse-columns
 ```
-$ npm install parse-columns
-```
-
 
 ## Usage
 
@@ -21,51 +19,48 @@ map -hosts           0         0         0   100%    /net
 ```
 
 ```js
-const {promisify} = require('util');
-const childProcess = require('child_process');
-const parseColumns = require('parse-columns');
+import {promisify} from 'node:util';
+import childProcess from 'node:child_process';
+import parseColumns from 'parse-columns';
 
 const execFileP = promisify(childProcess.execFile);
 
-(async () => {
-	const {stdout} = await execFileP('df', ['-kP']);
+const {stdout} = await execFileP('df', ['-kP']);
 
-	console.log(parseColumns(stdout, {
-		transform: (item, header, columnIndex) => {
-			// Coerce elements in column index 1 to 3 to a number
-			if (columnIndex >= 1 && columnIndex <= 3) {
-				return Number(item);
-			}
-
-			return item;
+console.log(parseColumns(stdout, {
+	transform: (item, header, columnIndex) => {
+		// Coerce elements in column index 1 to 3 to a number
+		if (columnIndex >= 1 && columnIndex <= 3) {
+			return Number(item);
 		}
-	}));
-	/*
-	[
-		{
-			Filesystem: '/dev/disk1',
-			'1024-blocks': 487350400,
-			Used: 467528020,
-			Available: 19566380,
-			Capacity: '96%',
-			'Mounted on': '/'
-		},
-		…
-	]
-	*/
-})();
-```
 
+		return item;
+	}
+}));
+/*
+[
+	{
+		Filesystem: '/dev/disk1',
+		'1024-blocks': 487350400,
+		Used: 467528020,
+		Available: 19566380,
+		Capacity: '96%',
+		'Mounted on': '/'
+	},
+	…
+]
+*/
+```
 
 ## API
 
-### parseColumns(textColumns, [options])
+### parseColumns(textColumns, options?)
 
 #### textColumns
 
 Type: `string`
 
-Text columns to parse.
+The text columns to parse.
 
 #### options
 
@@ -99,12 +94,6 @@ The supplied function gets the following arguments and is expected to return the
 - `columnIndex` *(number)*
 - `rowIndex` *(number)*
 
-
 ## Related
 
 - [parse-columns-cli](https://github.com/sindresorhus/parse-columns-cli) - CLI for this module
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)
