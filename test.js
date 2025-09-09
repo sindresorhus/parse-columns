@@ -133,7 +133,7 @@ test('handles `df` output with spaces', t => {
 	]);
 });
 
-test.failing('handles `df` output with spaces and `headers` option', t => {
+test('handles `df` output with spaces and `headers` option', t => {
 	const data = parseColumns(`
 	Filesystem                           Type 1024-blocks      Used Available Capacity Mounted on
 	/dev/sda1 2 3 4 5 999                ext4   243617788 137765660 105852128      57% /media/foo1 2 3 4 5 999

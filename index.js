@@ -53,20 +53,31 @@ export default function parseColumns(input, options = {}) {
 	let items;
 
 	let {headers} = options;
+
+	// Process the first line to clean up splits (remove empty columns)
+	// This needs to happen whether headers are provided or not
+	items = splitAt(lines[0], splits, {remove: true});
+
+	for (const [index, item] of items.entries()) {
+		if (item.trim() === '') {
+			splits[index - 1] = null;
+		}
+	}
+
+	splits = splits.filter(Boolean);
+
+	// If headers weren't provided, extract them from the first line
 	if (!headers) {
 		headers = [];
+		// Re-split with cleaned splits to get proper header values
 		items = splitAt(lines[0], splits, {remove: true});
 
-		for (let [index, item] of items.entries()) {
+		for (let item of items) {
 			item = item.trim();
 			if (item) {
 				headers.push(item);
-			} else {
-				splits[index - 1] = null;
 			}
 		}
-
-		splits = splits.filter(Boolean);
 	}
 
 	for (const [index, line] of lines.slice(1).entries()) {
