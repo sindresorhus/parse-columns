@@ -1,4 +1,4 @@
-export interface Options<Value = string> {
+export type Options<Value = string> = {
 	/**
 	Separator to split columns on.
 
@@ -34,7 +34,7 @@ export interface Options<Value = string> {
 		columnIndex: number,
 		rowIndex: number
 	) => Value;
-}
+};
 
 /**
 Parse text columns, like the output of Unix commands.

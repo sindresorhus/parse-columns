@@ -60,14 +60,14 @@ const getSplits = (lines, separator) => {
 	let consecutive = false;
 
 	for (const [index, count] of counts.entries()) {
-		if (count !== lines.length) { // eslint-disable-line no-negated-condition
-			consecutive = false;
-		} else {
+		if (count === lines.length) {
 			if (index !== 0 && !consecutive) {
 				splits.push(index);
 			}
 
 			consecutive = true;
+		} else {
+			consecutive = false;
 		}
 	}
 
@@ -75,7 +75,7 @@ const getSplits = (lines, separator) => {
 };
 
 export default function parseColumns(input, options = {}) {
-	const lines = input.replace(/^\s*\n|\s+$/g, '').split('\n');
+	const lines = input.replaceAll(/^\s*\n|\s+$/g, '').split('\n');
 	let splits = getSplits(lines, options.separator);
 	const {transform} = options;
 	const rows = [];

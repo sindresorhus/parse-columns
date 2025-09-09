@@ -40,7 +40,7 @@ test('headers option', t => {
 
 test('transform option', t => {
 	const fixture = parseColumns(fixture1, {
-		transform: (item, header, rowIndex, columnIndex) => {
+		transform(item, header, rowIndex, columnIndex) {
 			t.is(typeof rowIndex, 'number');
 			t.is(typeof columnIndex, 'number');
 			return header === 'PID' ? Number(item) : item;
