@@ -68,10 +68,27 @@ Type: `object`
 
 ##### separator
 
-Type: `string`
+Type: `string | RegExp`
 Default: `' '`
 
 Separator to split columns on.
+
+- `string`: Single character separator (default behavior)
+- `RegExp`: Regular expression pattern for flexible matching
+
+```js
+// Default space separator
+parseColumns(data);
+
+// Tab separator  
+parseColumns(data, {separator: '\t'});
+
+// Any whitespace (spaces, tabs, etc.)
+parseColumns(data, {separator: /\s+/});
+
+// Either spaces or tabs  
+parseColumns(data, {separator: /[ \t]/});
+```
 
 ##### headers
 

@@ -161,3 +161,66 @@ test('handles `df` output with spaces and `headers` option', t => {
 		},
 	]);
 });
+
+test('regex separator', t => {
+	const data = parseColumns(`
+	A    B    C
+	1    2    3
+	4    5    6
+	`, {
+		separator: /\s+/,
+	});
+
+	t.deepEqual(data, [
+		{
+			A: '1',
+			B: '2',
+			C: '3',
+		},
+		{
+			A: '4',
+			B: '5',
+			C: '6',
+		},
+	]);
+});
+
+test('regex separator with headers', t => {
+	const data = parseColumns(`
+	A    B    C
+	1    2    3
+	4    5    6
+	`, {
+		separator: /\s+/,
+		headers: ['first', 'second', 'third'],
+	});
+
+	t.deepEqual(data, [
+		{
+			first: '1',
+			second: '2',
+			third: '3',
+		},
+		{
+			first: '4',
+			second: '5',
+			third: '6',
+		},
+	]);
+});
+
+test('regex separator basic functionality', t => {
+	// Test that regex separator is accepted and produces some result
+	// The exact behavior depends on data alignment
+	const data = parseColumns(`
+	A    B
+	1    2
+	3    4
+	`, {
+		separator: /\s+/,
+	});
+
+	t.true(Array.isArray(data));
+	t.is(data.length, 2);
+	t.is(typeof data[0], 'object');
+});

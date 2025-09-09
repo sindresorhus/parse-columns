@@ -9,16 +9,45 @@ Find separators that are on the same index on each line, remove consecutive ones
 
 const countSeparators = (lines, separator = ' ') => {
 	const counts = [];
-	const separatorRegex = new RegExp(escapeStringRegexp(separator), 'g');
+	let separatorRegex;
+	let canPad = true;
+
+	// Handle different separator types
+	if (separator instanceof RegExp) {
+		// Check for problematic zero-width patterns
+		if (separator.test('') || separator.exec('test')?.shift()?.length === 0) {
+			throw new TypeError('Zero-width regex patterns are not supported');
+		}
+
+		separatorRegex = separator.global ? separator : new RegExp(separator.source, separator.flags + 'g');
+		canPad = false;
+	} else {
+		// String separator (current behavior)
+		separatorRegex = new RegExp(escapeStringRegexp(separator), 'g');
+	}
+
 	const headerLength = (lines[0] || '').length;
 
 	for (let line of lines) {
-		// Ensure lines are as long as the header
-		const padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
-		line += separator.repeat(padAmount);
+		// Only pad for string separators to maintain exact compatibility
+		if (canPad) {
+			const padAmount = Math.ceil(Math.max(headerLength - line.length, 0) / separator.length);
+			line += separator.repeat(padAmount);
+		}
 
-		for (const {index: column} of execall(separatorRegex, line)) {
-			counts[column] = typeof counts[column] === 'number' ? counts[column] + 1 : 1;
+		for (const match of execall(separatorRegex, line)) {
+			// Skip zero-width matches to prevent issues
+			if (match.match.length === 0) {
+				continue;
+			}
+
+			const start = match.index;
+			const end = start + match.match.length - 1;
+
+			// Mark all positions in the match range
+			for (let position = start; position <= end; position++) {
+				counts[position] = (counts[position] || 0) + 1;
+			}
 		}
 	}
 

@@ -3,8 +3,20 @@ export interface Options<Value = string> {
 	Separator to split columns on.
 
 	@default ' '
+
+	@example
+	```
+	// String separator (default behavior)
+	parseColumns(data, {separator: ' '});
+
+	// Regex separator for flexible matching
+	parseColumns(data, {separator: /\s+/});
+
+	// Multiple separators using regex alternation
+	parseColumns(data, {separator: /[ \t]/});
+	```
 	*/
-	readonly separator?: string;
+	readonly separator?: string | RegExp;
 
 	/**
 	Headers to use instead of the existing ones.
