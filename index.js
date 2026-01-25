@@ -13,6 +13,7 @@ const countSeparators = (lines, separator = ' ') => {
 	let canPad = true;
 
 	// Handle different separator types
+	// The separator is developer-controlled, not user input, so ReDoS is not a concern.
 	if (separator instanceof RegExp) {
 		// Check for problematic zero-width patterns
 		if (separator.test('') || separator.exec('test')?.shift()?.length === 0) {

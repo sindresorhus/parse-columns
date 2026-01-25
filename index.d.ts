@@ -39,6 +39,8 @@ export type Options<Value = string> = {
 /**
 Parse text columns, like the output of Unix commands.
 
+Fixed-width parsing needs every row to line up with the header's column boundaries. A cell that is wider than its column cannot be detected, because it looks the same as two merged columns. The columns then merge and the resulting keys are wrong. Pass `headers` to spot it, or pad the output at the source.
+
 @param textColumns - Text columns to parse.
 
 @example

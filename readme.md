@@ -111,6 +111,14 @@ The supplied function gets the following arguments and is expected to return the
 - `columnIndex` *(number)*
 - `rowIndex` *(number)*
 
+## Limitations
+
+Fixed-width parsing needs every row to line up with the header's column boundaries.
+
+A cell that is wider than its column cannot be detected. It has the same shape as two merged columns, or as a value that contains the separator, which this module supports on purpose. When it happens, the columns merge and the resulting keys are wrong. The module does not throw and does not warn.
+
+Pass `headers` when you can. A row that produces an empty field is then a clear sign of the problem. Better still, make the command pad its own output (`ps` without truncation, `df -P`), or run it through `column -t` first.
+
 ## Related
 
 - [parse-columns-cli](https://github.com/sindresorhus/parse-columns-cli) - CLI for this module
